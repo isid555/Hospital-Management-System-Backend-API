@@ -35,7 +35,7 @@ exports.getNurseById = async (req, res) => {
 exports.updateNurse = async (req, res) => {
   try {
     const nurse = await Nurse.findByIdAndUpdate(
-      req.params.id,
+      req.user._id,
       { $set: req.body },
       { new: true }
     );
@@ -55,7 +55,7 @@ exports.updateNurse = async (req, res) => {
 
 exports.deleteNurse = async (req, res) => {
   try {
-    const deletedNurse = await Nurse.findByIdAndDelete(req.params.id);
+    const deletedNurse = await Nurse.findByIdAndDelete(req.user._id);
     if (!deletedNurse) return res.status(404).send("Nurse not found");
 
     res.status(200).json({

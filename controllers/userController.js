@@ -39,7 +39,7 @@ exports.getUserById = async (req, res) => {
 exports.updateUser = async (req, res) => {
   try {
     const updatedUser = await User.findByIdAndUpdate(
-      req.params.id,
+      req.user._id,
       {
         $set: req.body,
       },
@@ -59,7 +59,7 @@ exports.updateUser = async (req, res) => {
 // Delete a user by ID
 exports.deleteUser = async (req, res) => {
   try {
-    const deletedUser = await User.findByIdAndDelete(req.params.id);
+    const deletedUser = await User.findByIdAndDelete(req.user._id);
     if (!deletedUser) return res.status(404).send("User not found");
     res.status(200).json({
       status: "success",

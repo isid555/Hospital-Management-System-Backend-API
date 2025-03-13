@@ -14,7 +14,7 @@ exports.getAllDoctors = async (req, res) => {
 // Get a single doctor by ID
 exports.getDoctorById = async (req, res) => {
   try {
-    const doctor = await Doctor.findById(req.params.id);
+    const doctor = await Doctor.findById(req.user._id);
     if (!doctor || doctor.role !== "doctor")
       return res.status(404).send("Doctor not found");
     res.send(doctor);
@@ -27,7 +27,7 @@ exports.getDoctorById = async (req, res) => {
 exports.updateDoctor = async (req, res) => {
   try {
     const updatedDoctor = await Doctor.findByIdAndUpdate(
-      req.params.id,
+      req.user._id, 
       { $set: req.body },
       { new: true }
     );
@@ -50,10 +50,14 @@ exports.updateDoctor = async (req, res) => {
 // Delete a doctor by ID
 exports.deleteDoctor = async (req, res) => {
   try {
-    const deletedDoctor = await Doctor.findByIdAndDelete(req.params.id);
+    const deletedDoctor = await Doctor.findByIdAndDelete(req.user._id);
     if (!deletedDoctor || deletedDoctor.role !== "doctor")
       return res.status(404).send("Doctor not found");
-    res.send(deletedDoctor);
+    res.status(200).json({
+      status: "success",
+      message: "Doctor profile deleted successfully",
+      data: deletedDoctor
+    });
   } catch (err) {
     res.status(400).send(err);
   }
