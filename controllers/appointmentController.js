@@ -178,7 +178,7 @@ exports.completeAppointment = async (req, res) => {
         if (!appointment) return res.status(404).send("Appointment not found");
 
         // Check if the authenticated user is the doctor of the appointment
-        if (req.user.role !== 'doctor' || appointment.doctor.toString() !== req.user.id) {
+        if (req.user.role !== 'doctor' || appointment.doctor.toString() !== req.user._id) {
             return res.status(403).json({ success: false, message: "Access denied" });
         }
 
