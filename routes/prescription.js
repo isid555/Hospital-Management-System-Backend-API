@@ -1,10 +1,11 @@
 const router = require('express').Router();
 const prescriptionController = require('../controllers/prescriptionController');
+const { verifyToken, verifyRole }  = require('../auth/verifytoken');
 
-router.get('/', prescriptionController.getAllPrescriptions);
-router.get('/:id', prescriptionController.getPrescriptionById);
-router.post('/create', prescriptionController.createPrescription);
-router.put('/:id', prescriptionController.updatePrescription);
-router.delete('/:id', prescriptionController.deletePrescription);
+router.get('/', verifyToken, prescriptionController.getAllPrescriptions);
+router.get('/:id', verifyToken, prescriptionController.getPrescriptionById);
+router.post('/create', verifyToken, verifyRole(['doctor']), prescriptionController.createPrescription);
+router.put('/:id', verifyToken, verifyRole(['doctor']), prescriptionController.updatePrescription);
+router.delete('/:id', verifyToken, verifyRole(['doctor']), prescriptionController.deletePrescription);
 
 module.exports = router;
