@@ -20,6 +20,8 @@ const userRoutes = require('./routes/user')
 const prescriptionRoutes = require('./routes/prescription')
 const doctorRoutes = require('./routes/doctor')
 const nurseRoutes = require('./routes/nurse')
+const adminRoutes = require('./routes/Admin')
+const appointmentRoutes = require('./routes/appointment')
 
 // Midleware
 app.use(express.json()); 
@@ -43,6 +45,8 @@ app.use('/api/user', userRoutes);
 app.use('/api/prescription', prescriptionRoutes);
 app.use('/api/doctor', doctorRoutes);
 app.use('/api/nurse', nurseRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/appointment', appointmentRoutes);
 
 //start the server
 app.listen(port, () => {
