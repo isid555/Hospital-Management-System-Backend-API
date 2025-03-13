@@ -2,6 +2,7 @@ const express = require("express");
 const User = require("../models/User");
 const Doctor = require("../models/Doctor");
 const Nurse = require("../models/Nurse");
+const Admin = require("../models/Admin");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const {
@@ -26,6 +27,8 @@ exports.register = async (req, res) => {
       user = await Doctor.findOne({ email });
     } else if (role === "nurse") {
       user = await Nurse.findOne({ email });
+    } else if (role === "admin") {
+      user = await Admin.findOne({ email });
     }
 
     // Check if user exists
@@ -68,6 +71,16 @@ exports.register = async (req, res) => {
         phone,
       });
     }
+    if (role === "admin") {
+      user = new Admin({
+        name,
+        email,
+        password: hashPassword,
+        role,
+        gender,
+        phone
+      });
+    }
 
     await user.save();
     res
@@ -95,6 +108,7 @@ exports.login = async (req, res) => {
     const patient = await User.findOne({ email });
     const doctor = await Doctor.findOne({ email });
     const nurse = await Nurse.findOne({ email });
+    const admin = await Admin.findOne({ email });
 
     if (patient) {
       user = patient;
@@ -105,7 +119,9 @@ exports.login = async (req, res) => {
     if (nurse) {
       user = nurse;
     }
-
+    if (admin) {
+      user = admin;
+    }
     // Check if the user exists
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -120,7 +136,9 @@ exports.login = async (req, res) => {
     }
 
     // Get token
-    const token = jwt.sign({ _id: user._id }, process.env.SECRET_KEY, { expiresIn: '20d' });
+    const token = jwt.sign({ _id: user._id, role: user.role }, process.env.SECRET_KEY, { expiresIn: '7d' });
+
+    console.log('Generated Token:', token); // Add this line to print the token
 
     const { password: userPassword, role, ...rest } = user._doc;
 

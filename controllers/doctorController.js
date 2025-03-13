@@ -1,5 +1,5 @@
-const User = require('../models/User');
-const Doctor = require('../models/Doctor');
+const User = require("../models/User");
+const Doctor = require("../models/Doctor");
 
 // Get all doctors
 exports.getAllDoctors = async (req, res) => {
@@ -15,7 +15,8 @@ exports.getAllDoctors = async (req, res) => {
 exports.getDoctorById = async (req, res) => {
   try {
     const doctor = await Doctor.findById(req.params.id);
-    if (!doctor || doctor.role !== 'doctor') return res.status(404).send("Doctor not found");
+    if (!doctor || doctor.role !== "doctor")
+      return res.status(404).send("Doctor not found");
     res.send(doctor);
   } catch (err) {
     res.status(400).send(err);
@@ -34,7 +35,7 @@ exports.updateDoctor = async (req, res) => {
     if (!updatedDoctor) return res.status(404).send("Doctor not found");
 
     res.status(200).json({
-      status : "success",
+      status: "success",
       message: "Doctor profile updated successfully",
       doctor: updatedDoctor,
     });
@@ -50,7 +51,8 @@ exports.updateDoctor = async (req, res) => {
 exports.deleteDoctor = async (req, res) => {
   try {
     const deletedDoctor = await Doctor.findByIdAndDelete(req.params.id);
-    if (!deletedDoctor || deletedDoctor.role !== 'doctor') return res.status(404).send("Doctor not found");
+    if (!deletedDoctor || deletedDoctor.role !== "doctor")
+      return res.status(404).send("Doctor not found");
     res.send(deletedDoctor);
   } catch (err) {
     res.status(400).send(err);
@@ -59,11 +61,29 @@ exports.deleteDoctor = async (req, res) => {
 
 // Get a Doctor Profile with Id
 exports.getDoctorProfile = async (req, res) => {
+  const doctorId = req.user._id;
+
   try {
-    const doctor = await Doctor.findById(req.user.id).populate('user');
-    if (!doctor || doctor.role !== 'doctor') return res.status(404).send("Doctor not found");
-    res.send(doctor);
+    const doctor = await Doctor.findById(doctorId);
+
+    if (!doctor) {
+      return res.status(404).json({ success: false, message: "Doctor not found" });
+    }
+
+    const { password, ...rest } = doctor._doc;
+    // const appointments = await Booking.find({ doctor: doctorId });
+
+    res.status(200).json({
+      success: true,
+      messsage: "Profile info is getting",
+      data: {
+        ...rest,
+        // appointments
+      },
+    });
   } catch (err) {
-    res.status(400).send(err);
+    res
+      .status(500)
+      .json({ success: false, message: "Something went wrong, cannot get" });
   }
 };
