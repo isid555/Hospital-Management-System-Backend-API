@@ -38,7 +38,7 @@ app.use((err, req, res, next) => {
     next();
   });
   
-
+ 
 //Route midlewares 
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
