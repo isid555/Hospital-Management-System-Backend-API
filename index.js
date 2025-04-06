@@ -33,7 +33,7 @@ app.use(helmet());
 app.use(morgan('dev'));
 // app.use(cors());
 app.use(cors({
-    origin: "http://localhost:5173",  // your frontend URL
+    origin: "https://hospital-managment-frontend-delta.vercel.app",  // your frontend URL
     credentials: true
 }));
 app.use(bodyParser.json());
