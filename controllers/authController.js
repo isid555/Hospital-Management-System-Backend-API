@@ -20,69 +20,24 @@ exports.register = async (req, res) => {
 
   const { name, email, password, role, gender, phone } = req.body;
   try {
-    let user = null;
-    if (role === "patient") {
-      user = await User.findOne({ email });
-    } else if (role === "doctor") {
-      user = await Doctor.findOne({ email });
-    } else if (role === "nurse") {
-      user = await Nurse.findOne({ email });
-    } else if (role === "admin") {
-      user = await Admin.findOne({ email });
-    }
+    let Model;
+    if (role === "patient") Model = User;
+    else if (role === "doctor") Model = Doctor;
+    else if (role === "nurse") Model = Nurse;
+    else if (role === "admin") Model = Admin;
+    else return res.status(400).json({ message: "Invalid role" });
 
-    // Check if user exists
-    if (user) {
+    const existingUser = await Model.findOne({ email });
+    if (existingUser) {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    // Hash the password
     const salt = await bcrypt.genSalt(10);
     const hashPassword = await bcrypt.hash(password, salt);
 
-    if (role === "patient") {
-      user = new User({
-        name,
-        email,
-        password: hashPassword,
-        role,
-        gender,
-        phone,
-      });
-    }
+    const newUser = new Model({ name, email, password: hashPassword, role, gender, phone });
+    await newUser.save();
 
-    if (role === "doctor") {
-      user = new Doctor({
-        name,
-        email,
-        password: hashPassword,
-        role,
-        gender,
-        phone,
-      });
-    }
-    if (role === "nurse") {
-      user = new Nurse({
-        name,
-        email,
-        password: hashPassword,
-        role,
-        gender,
-        phone,
-      });
-    }
-    if (role === "admin") {
-      user = new Admin({
-        name,
-        email,
-        password: hashPassword,
-        role,
-        gender,
-        phone
-      });
-    }
-
-    await user.save();
     res
       .status(200)
       .json({ success: true, message: "User successfully created" });
@@ -136,7 +91,7 @@ exports.login = async (req, res) => {
     }
 
     // Get token
-    const token = jwt.sign({ _id: user._id, role: user.role }, process.env.SECRET_KEY, { expiresIn: '7d' });
+    const token = jwt.sign({ _id: user._id, role: user.role }, "sid_hospitals", { expiresIn: '7d' });
 
     console.log('Generated Token:', token); // Add this line to print the token
 

@@ -3,13 +3,16 @@ const appointmentController = require('../controllers/appointmentController');
 const { verifyToken, verifyRole } = require('../auth/verifytoken');
 
 // Get all appointments for the authenticated user
-router.get('/my-appointments', verifyToken, verifyRole(['patient', 'doctor']), appointmentController.getUserAppointments);
+router.get('/my-appointments', verifyToken, appointmentController.getUserAppointments);
 
 // Create a new appointment
 router.post('/', verifyToken, verifyRole(['patient']), appointmentController.createAppointment);
 
 // Get all appointments
 router.get('/', verifyToken, verifyRole(['admin']), appointmentController.getAllAppointments);
+
+router.get('/all-by-user', verifyToken ,  appointmentController.getAppointmentsByUser);
+
 
 // Get an appointment by ID
 router.get('/:id', verifyToken, verifyRole(['admin', 'doctor', 'patient']), appointmentController.getAppointmentById);

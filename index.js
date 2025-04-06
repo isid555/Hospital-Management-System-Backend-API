@@ -10,9 +10,13 @@ const bodyParser = require('body-parser');
 // Load environment variables
 dotenv.config();
 
+
+
 const app = express();
 const port = process.env.PORT || 3000;
 const MONGODB = process.env.MONGODB;
+
+
 
 // Import the routes
 const authRoutes = require('./routes/auth');
@@ -27,8 +31,15 @@ const appointmentRoutes = require('./routes/appointment')
 app.use(express.json()); 
 app.use(helmet());
 app.use(morgan('dev'));
-app.use(cors());
+// app.use(cors());
+app.use(cors({
+    origin: "http://localhost:5173",  // your frontend URL
+    credentials: true
+}));
 app.use(bodyParser.json());
+
+
+
 
 app.use((err, req, res, next) => {
     if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
@@ -41,7 +52,7 @@ app.use((err, req, res, next) => {
  
 //Route midlewares 
 app.use('/api/auth', authRoutes);
-app.use('/api/user', userRoutes);
+app.use('/api/patient', userRoutes);
 app.use('/api/prescription', prescriptionRoutes);
 app.use('/api/doctor', doctorRoutes);
 app.use('/api/nurse', nurseRoutes);

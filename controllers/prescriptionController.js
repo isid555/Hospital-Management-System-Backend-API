@@ -4,7 +4,7 @@ exports.createPrescription = async (req, res) => {
   try {
     const prescription = new Prescription(req.body);
     await prescription.save();
-    res.status(201).json({
+    res.status(200).json({
       status: "success",
       message: "Prescription created successfully",
       data: prescription,
@@ -84,3 +84,40 @@ exports.deletePrescription = async (req, res) => {
     })
   }
 }
+
+
+exports.getPrescriptionsByUserAndDoctor = async (req, res) => {
+  const { userId, doctorId } = req.query;
+
+  if (!userId || !doctorId) {
+    return res.status(400).json({
+      status: "error",
+      message: "Both userId and doctorId are required",
+    });
+  }
+
+  try {
+    const prescriptions = await Prescription.find({
+      user: userId,
+      doctor: doctorId,
+    });
+
+    if (prescriptions.length === 0) {
+      return res.status(404).json({
+        status: "error",
+        message: "No prescriptions found for this user and doctor",
+      });
+    }
+
+    res.status(200).json({
+      status: "success",
+      message: "Prescriptions fetched successfully",
+      data: prescriptions,
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: "error",
+      message: err.message,
+    });
+  }
+};

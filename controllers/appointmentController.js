@@ -113,17 +113,17 @@ exports.getUserAppointments = async (req, res) => {
         const userRole = req.user.role; // Get the authenticated user's role
 
         let appointments;
-        if (userRole === 'patient') {
+        if (userRole === 'patient' || userRole === 'nurse') {
             appointments = await Appointment.find({ user: userId }).populate('doctor');
         } else if (userRole === 'doctor') {
             appointments = await Appointment.find({ doctor: userId }).populate('user');
         } else {
             return res.status(403).json({ success: false, message: "Access denied" });
         }
-
-        if (appointments.length < 1) {
-            return res.status(404).json({ success: false, message: "No appointments found" });
-        }
+        //
+        // if (appointments.length < 1) {
+        //     return res.status(404).json({ success: false, message: "No appointments found" });
+        // }
 
         res.status(200).json({
             success: true,
@@ -137,6 +137,22 @@ exports.getUserAppointments = async (req, res) => {
         });
     }
 };
+
+
+exports.getAppointmentsByUser = async (req, res) => {
+    try {
+        const userId = req.query.userId ;
+        const appointments = await Appointment.find({ user: userId }).populate('user').populate('doctor');
+        res.status(200).json({
+            success: true,
+            message: "Appointments fetched successfully",
+            data: appointments,
+        });
+    } catch (err) {
+        res.status(500).json({ success: false, message: "Error fetching appointments", error: err.message });
+    }
+};
+
 
 
 exports.cancelAppointment = async (req, res) => {

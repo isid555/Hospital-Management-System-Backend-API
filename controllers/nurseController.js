@@ -16,21 +16,24 @@ exports.getAllNurses = async (req, res) => {
   }
 };
 
-exports.getNurseById = async (req, res) => {
+exports.getNurseProfile = async (req, res) => {
   try {
-    const nurse = await Nurse.findById(req.params.id);
+    const nurse = await Nurse.findById(req.user._id);
     if (!nurse) return res.status(404).send("Nurse not found");
+
     res.status(200).json({
-      status: "success",
+      success: true,
+      message: "Profile info is getting",
       data: nurse,
     });
   } catch (err) {
     res.status(400).json({
-      status: "error",
+      success: false,
       message: err.message,
     });
   }
 };
+
 
 exports.updateNurse = async (req, res) => {
   try {

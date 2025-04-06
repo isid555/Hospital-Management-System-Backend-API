@@ -11,7 +11,7 @@ function verifyToken(req, res, next) {
     
     try {
         console.log('Token to Verify:', token); // Log the token
-        const decoded = jwt.verify(token, process.env.SECRET_KEY);
+        const decoded = jwt.verify(token, "sid_hospitals");
         console.log('Verified Token:', decoded); // Log the decoded token
         req.user = decoded;
         next();

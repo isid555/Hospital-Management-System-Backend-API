@@ -125,6 +125,43 @@ exports.RejectNurse = async (req, res) => {
     }
 };
 
+exports.getPendingDoctors = async (req, res) => {
+    try {
+        const doctors = await Doctor.find({ approved: 'pending' });
+        res.status(200).json({ success: true, data: doctors });
+    } catch (err) {
+        res.status(500).json({ success: false, message: 'Failed to fetch pending doctors' });
+    }
+};
+
+exports.getPendingNurses = async (req, res) => {
+    try {
+        const nurses = await Nurse.find({ approved: 'pending' });
+        res.status(200).json({ success: true, data: nurses });
+    } catch (err) {
+        res.status(500).json({ success: false, message: 'Failed to fetch pending nurses' });
+    }
+};
+
+exports.getApprovedDoctors = async (req, res) => {
+    try {
+        const doctors = await Doctor.find({ approved: 'approved' });
+        res.status(200).json({ success: true, data: doctors });
+    } catch (err) {
+        res.status(500).json({ success: false, message: 'Failed to fetch pending doctors' });
+    }
+};
+
+exports.getApprovedNurses = async (req, res) => {
+    try {
+        const nurses = await Nurse.find({ approved: 'approved' });
+        res.status(200).json({ success: true, data: nurses });
+    } catch (err) {
+        res.status(500).json({ success: false, message: 'Failed to fetch pending nurses' });
+    }
+};
+
+
 exports.updateAdmin = async (req, res) => {
     try {
         const updatedAdmin = await Admin.findByIdAndUpdate(
@@ -151,7 +188,7 @@ exports.updateAdmin = async (req, res) => {
 
 exports.deleteAdmin = async (req, res) => {
     try {
-        const deletedAdmin = await Admin.findByIdAndDelete(req.usser._id);
+        const deletedAdmin = await Admin.findByIdAndDelete(req.user._id);
         if (!deletedAdmin) return res.status(404).send("Admin not found");
         res.status(200).json({
             status: "success",
@@ -193,4 +230,52 @@ exports.getAdminProfile = async (req, res) => {
         res.status(500).json({ success: false, message: "Something went wrong, cannot get" });
     }
 };
+
+
+exports.deleteDoctor = async (req, res) => {
+    try {
+        const doctorId = req.params.id;
+        const deletedDoctor = await Doctor.findByIdAndDelete(doctorId);
+
+        if (!deletedDoctor || deletedDoctor.role !== "doctor") {
+            return res.status(404).json({ status: "error", message: "Doctor not found" });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Doctor profile deleted successfully",
+            data: deletedDoctor
+        });
+    } catch (err) {
+        res.status(400).json({
+            success: false,
+            message: err.message
+        });
+    }
+};
+
+
+exports.deleteNurse = async (req, res) => {
+    try {
+        const nurseId = req.params.id;
+        const deletedNurse = await Nurse.findByIdAndDelete(nurseId);
+
+        if (!deletedNurse || deletedNurse.role !== "nurse") {
+            return res.status(404).json({ status: "error", message: "Nurse not found" });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Nurse deleted successfully",
+            data: deletedNurse
+        });
+    } catch (err) {
+        return res.status(400).json({
+            success: false,
+            message: err.message
+        });
+    }
+};
+
+
 

@@ -15,8 +15,9 @@ exports.getAllDoctors = async (req, res) => {
 exports.getDoctorById = async (req, res) => {
   try {
     const doctor = await Doctor.findById(req.user._id);
-    if (!doctor || doctor.role !== "doctor")
+    if (!doctor)
       return res.status(404).send("Doctor not found");
+
     res.send(doctor);
   } catch (err) {
     res.status(400).send(err);
@@ -27,7 +28,7 @@ exports.getDoctorById = async (req, res) => {
 exports.updateDoctor = async (req, res) => {
   try {
     const updatedDoctor = await Doctor.findByIdAndUpdate(
-      req.user._id, 
+      req.user._id,
       { $set: req.body },
       { new: true }
     );
